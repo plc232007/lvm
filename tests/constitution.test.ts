@@ -40,6 +40,8 @@ describe('constituição', () => {
   // única exata autorizada é o atalho dentro do próprio helper de tolerância.
   it('src/core não compara float com literal numérico via === ou !==', () => {
     const comparacaoComLiteral = /(?:[=!]==\s*-?\d|-?\d(?:\.\d+)?(?:e-?\d+)?\s*[=!]==)/;
+    // Tamanho de array é inteiro por definição: comparar com 0 não tem risco.
+    const contagemInteira = /\.length\s*[=!]==/;
 
     const violacoes = arquivosTs(CORE_DIR)
       .filter((arquivo) => !arquivo.endsWith('tolerancia.ts'))
@@ -47,7 +49,7 @@ describe('constituição', () => {
         const linhas = readFileSync(arquivo, 'utf8').split('\n');
         return linhas
           .map((linha, i) => ({ linha: linha.trim(), numero: i + 1 }))
-          .filter(({ linha }) => comparacaoComLiteral.test(linha))
+          .filter(({ linha }) => comparacaoComLiteral.test(linha) && !contagemInteira.test(linha))
           .map(({ linha, numero }) => `${arquivo}:${numero} → ${linha}`);
       });
 
