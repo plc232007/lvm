@@ -1,3 +1,4 @@
+import { latexNumero } from '@/core/math/formato';
 import { quaseIgual } from '@/core/math/tolerancia';
 import type { TrianguloRetangulo } from '@/core/math/triangulo-retangulo';
 
@@ -85,4 +86,16 @@ export function relacoesMetricas(t: TrianguloRetangulo): readonly Relacao[] {
 
 export function relacaoVale(relacao: Relacao, eps?: number): boolean {
   return quaseIgual(relacao.esquerda.valor, relacao.direita.valor, eps);
+}
+
+/**
+ * Troca os símbolos de uma fórmula pelos valores atuais: `h^2` vira `4{,}8^2`.
+ * Vive aqui, e não no componente, para que a substituição seja testável e para
+ * que nenhuma fórmula precise ser reescrita na camada de UI.
+ *
+ * A fronteira de palavra protege as macros do LaTeX: em `\\cdot`, o `c` está
+ * colado no `d` e por isso não é confundido com o cateto `c`.
+ */
+export function substituirSimbolos(latex: string, valores: Medidas, casas = 2): string {
+  return latex.replace(/\b[abchmn]\b/g, (simbolo) => latexNumero(valores[simbolo as Simbolo], casas));
 }

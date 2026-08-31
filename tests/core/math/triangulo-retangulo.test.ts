@@ -1,6 +1,12 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { relacaoVale, relacoesMetricas, type RelacaoId } from '@/core/math/relacoes';
+import {
+  medidas as medidasDe,
+  relacaoVale,
+  relacoesMetricas,
+  substituirSimbolos,
+  type RelacaoId,
+} from '@/core/math/relacoes';
 import { EPS, quaseIgual } from '@/core/math/tolerancia';
 import {
   construirDeCatetos,
@@ -200,5 +206,30 @@ describe('limites de precisão', () => {
       expect(relacaoVale(relacao, 1e-6), `${relacao.latex} a 1e-6`).toBe(true);
     }
     expect(EPS).toBe(1e-9);
+  });
+});
+
+describe('substituição de símbolos', () => {
+  const medidas = { a: 10, b: 6, c: 8, h: 4.8, m: 3.6, n: 6.4 };
+
+  it('troca símbolo por valor em notação pt-BR', () => {
+    expect(substituirSimbolos('h^2', medidas)).toBe('4{,}8^2');
+    expect(substituirSimbolos('m + n', medidas)).toBe('3{,}6 + 6{,}4');
+  });
+
+  it('não confunde o cateto c com a macro \\cdot', () => {
+    expect(substituirSimbolos('m \\cdot n', medidas)).toBe('3{,}6 \\cdot 6{,}4');
+    expect(substituirSimbolos('b \\cdot c', medidas)).toBe('6 \\cdot 8');
+  });
+
+  it('produz uma igualdade legível para a relação inteira', () => {
+    const resultado = construirDeCatetos(6, 8);
+    expect(resultado.ok).toBe(true);
+    if (!resultado.ok) return;
+    const relacao = relacoesMetricas(resultado.valor).find((r) => r.id === 'altura');
+    expect(relacao).toBeDefined();
+    if (!relacao) return;
+    const valores = medidasDe(resultado.valor);
+    expect(substituirSimbolos(relacao.latex, valores)).toBe('4{,}8^2 = 3{,}6 \\cdot 6{,}4');
   });
 });
