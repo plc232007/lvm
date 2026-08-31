@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Newsreader } from 'next/font/google';
 import Link from 'next/link';
 import { Fermat } from '@/components/fermat/Fermat';
 import { AlternadorTema } from '@/components/site/AlternadorTema';
+import { FundoMatematico } from '@/components/site/FundoMatematico';
 import { Marca } from '@/components/site/Marca';
 import { SCRIPT_TEMA } from '@/lib/tema';
 import 'katex/dist/katex.min.css';
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
       </head>
       <body className="min-h-full flex flex-col antialiased">
+        <FundoMatematico />
         <a href="#conteudo" className="sr-only pular-para-conteudo">
           Pular para o conteúdo
         </a>

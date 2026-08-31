@@ -674,3 +674,139 @@ h1, h2, h3 {
   background: var(--papel-alto);
   border-top: 1px dashed var(--linha);
 }
+
+/* ============================================================
+   Fundo: a margem do caderno
+   Construções e fórmulas da própria matéria, rabiscadas em volta
+   do conteúdo. Só transform/opacity animam — o trabalho fica no
+   compositor e o celular da rede da escola não sofre.
+   ============================================================ */
+
+.fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.cabecalho,
+main,
+.rodape,
+.fermat-lancador,
+.fermat-painel {
+  position: relative;
+  z-index: 1;
+}
+.cabecalho { z-index: 30; }
+.fermat-lancador { z-index: 40; }
+.fermat-painel { z-index: 50; }
+
+.fundo__peca {
+  position: absolute;
+  animation: deriva var(--duracao, 70s) ease-in-out infinite alternate;
+  animation-delay: var(--espera, 0s);
+  will-change: transform;
+}
+
+.fundo__figura {
+  color: var(--azul);
+  opacity: 0.14;
+  width: var(--largura, 8.5rem);
+}
+.fundo__figura svg { width: 100%; height: auto; display: block; }
+
+.fundo__formula {
+  color: var(--tinta);
+  opacity: 0.1;
+  font-size: var(--corpo, 1.5rem);
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) .fundo__figura { opacity: 0.16; }
+  :root:not([data-tema='claro']) .fundo__formula { opacity: 0.12; }
+}
+:root[data-tema='escuro'] .fundo__figura { opacity: 0.16; }
+:root[data-tema='escuro'] .fundo__formula { opacity: 0.12; }
+
+@keyframes deriva {
+  from {
+    transform: translate3d(0, 0, 0) rotate(var(--giro, 0deg));
+  }
+  to {
+    transform: translate3d(var(--dx, 12px), var(--dy, -16px), 0)
+      rotate(calc(var(--giro, 0deg) + var(--giro-fim, 5deg)));
+  }
+}
+
+/* a marca respira: some e volta como grafite sob luz que muda */
+.fundo__peca > * {
+  animation: respirar var(--respiro, 26s) ease-in-out infinite alternate;
+  animation-delay: var(--espera, 0s);
+}
+@keyframes respirar {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+/* nas linhas tracejadas, o tracejado caminha devagar — o desenho fica vivo */
+.risco[stroke-dasharray] {
+  animation: caminhar 3.4s linear infinite;
+}
+@keyframes caminhar {
+  to { stroke-dashoffset: -8; }
+}
+
+/* O traço se desenha uma vez, como se alguém acabasse de passar o compasso. */
+.risco:not([stroke-dasharray]) {
+  stroke-dasharray: 520;
+  stroke-dashoffset: 520;
+  animation: desenhar 2.6s ease-out forwards;
+  animation-delay: var(--espera-risco, 0.3s);
+}
+.risco--tarde { --espera-risco: 1.4s; }
+
+@keyframes desenhar {
+  to { stroke-dashoffset: 0; }
+}
+
+/* posições: tudo mora nas bordas, longe da coluna de leitura */
+.fundo__peca--1  { top: 9%;  left: 2%;   --largura: 9rem;   --dx: 31px;  --dy: -40px; --giro: -6deg; --duracao: 46s; }
+.fundo__peca--2  { top: 58%; left: 4%;   --largura: 9.5rem; --dx: -26px; --dy: 35px;  --giro: 4deg;  --duracao: 53s; --espera: -20s; }
+.fundo__peca--3  { top: 26%; right: 3%;  --largura: 7.5rem; --dx: -35px; --dy: 31px;  --giro: 7deg;  --duracao: 42s; --espera: -8s; }
+.fundo__peca--4  { bottom: 6%; right: 6%; --largura: 9rem;  --dx: 26px;  --dy: -26px; --giro: -3deg; --duracao: 57s; --espera: -35s; }
+.fundo__peca--5  { top: 4%;  right: 16%; --largura: 8rem;   --dx: -22px; --dy: 40px;  --giro: 5deg;  --duracao: 48s; --espera: -14s; }
+.fundo__peca--6  { bottom: 22%; left: 11%; --largura: 8.5rem; --dx: 35px; --dy: 26px; --giro: -4deg; --duracao: 52s; --espera: -26s; }
+.fundo__peca--7  { top: 42%; right: 1%;  --largura: 8rem;   --dx: -31px; --dy: -31px; --giro: 6deg;  --duracao: 45s; --espera: -5s; }
+
+.fundo__peca--8  { top: 20%; left: 10%;  --corpo: 1.7rem; --dx: 22px;  --dy: 31px;  --giro: -3deg; --duracao: 55s; }
+.fundo__peca--9  { top: 50%; right: 9%;  --corpo: 1.5rem; --dx: -31px; --dy: -22px; --giro: 4deg;  --duracao: 47s; --espera: -18s; }
+.fundo__peca--10 { bottom: 12%; left: 3%; --corpo: 1.4rem; --dx: 26px; --dy: -31px; --giro: 5deg;  --duracao: 51s; --espera: -30s; }
+.fundo__peca--11 { top: 7%;  left: 24%;  --corpo: 1.3rem; --dx: -22px; --dy: 26px;  --giro: -5deg; --duracao: 56s; --espera: -12s; }
+.fundo__peca--12 { bottom: 34%; right: 3%; --corpo: 1.5rem; --dx: 31px; --dy: 26px; --giro: 3deg;  --duracao: 43s; --espera: -22s; }
+.fundo__peca--13 { top: 68%; left: 19%;  --corpo: 1.3rem; --dx: -26px; --dy: -35px; --giro: -4deg; --duracao: 58s; --espera: -40s; }
+.fundo__peca--14 { top: 34%; left: 1%;   --corpo: 1.4rem; --dx: 35px;  --dy: 22px;  --giro: 6deg;  --duracao: 50s; --espera: -9s; }
+
+/* Em tela estreita, a margem é do conteúdo: fica só um punhado de marcas. */
+@media (max-width: 75rem) {
+  .fundo__peca--5, .fundo__peca--11, .fundo__peca--13 { display: none; }
+}
+@media (max-width: 60rem) {
+  .fundo__peca--6, .fundo__peca--8, .fundo__peca--12 { display: none; }
+  .fundo__figura { opacity: 0.1; }
+  .fundo__formula { opacity: 0.075; }
+}
+@media (max-width: 40rem) {
+  .fundo__peca--3, .fundo__peca--7, .fundo__peca--9, .fundo__peca--10 { display: none; }
+  .fundo__peca--1 { --largura: 7rem; top: 4%; }
+  .fundo__peca--2 { --largura: 7rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fundo__peca,
+  .fundo__peca > *,
+  .risco[stroke-dasharray] { animation: none; }
+  .risco:not([stroke-dasharray]) { animation: none; stroke-dashoffset: 0; }
+}
