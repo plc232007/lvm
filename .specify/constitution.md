@@ -19,3 +19,32 @@
 - Nomes de domínio em português (Trilha, Atividade, Exercicio);
   nomes técnicos em inglês (registry, renderer, generator).
 - Sem comentário óbvio. Comentar só o não-trivial (fórmula, edge case).
+
+## Emendas
+
+### E1 — Rota de API para o assistente Fermat (autorizada em 2026-08-31)
+
+A regra "nenhum backend na v1" foi aberta em um ponto, e só nele:
+`src/app/api/fermat/route.ts` existe porque a alternativa era pior. Chamar a
+Groq direto do navegador exporia a chave da API para qualquer aluno que abrisse
+o inspetor.
+
+Condições que a exceção carrega:
+1. A rota é **proxy e nada mais**: não lê nem grava estado, não tem banco.
+2. A chave vive em `.env.local`, nunca no repositório.
+3. Nenhum identificador de aluno acompanha o pedido — nem nome, nem id, nem
+   progresso. Só o texto que ele digitou e o título da atividade aberta.
+4. A conversa não é persistida em lugar nenhum: vive na memória do componente e
+   morre ao fechar a página.
+5. O aluno é avisado, dentro do painel, de que o texto vai para um modelo
+   externo. Isso não é letra miúda: é uma linha visível abaixo do campo.
+
+A regra 4 continua valendo para progresso e dados de estudo, que seguem só no
+`localStorage`.
+
+### E2 — A resposta do exercício nunca vai para o modelo
+
+O contexto enviado ao Fermat inclui o enunciado em aberto, mas **nunca** a
+resposta esperada. É proposital: assim o assistente não tem como entregar o
+número mesmo se o aluno insistir, e a regra pedagógica deixa de depender só da
+boa vontade do prompt.

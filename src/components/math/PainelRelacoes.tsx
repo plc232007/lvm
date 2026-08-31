@@ -18,15 +18,23 @@ const NOMES: Record<Simbolo, string> = {
   n: 'projeção de c',
 };
 
+const COR: Partial<Record<Simbolo, string>> = {
+  h: 'var(--verde)',
+  m: 'var(--vermelho)',
+  n: 'var(--ambar)',
+};
+
 export function TabelaMedidas({ triangulo }: { triangulo: TrianguloRetangulo }) {
   const valores = medidasDe(triangulo);
 
   return (
-    <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+    <ul className="grade-medidas">
       {(Object.keys(NOMES) as Simbolo[]).map((simbolo) => (
-        <li key={simbolo} className="rounded border border-neutral-300 px-2 py-1">
-          <span className="block text-xs text-neutral-600">{NOMES[simbolo]}</span>
-          <Latex tex={`${simbolo} = ${latexNumero(valores[simbolo])}`} />
+        <li key={simbolo} className="medida-célula" style={{ borderLeftColor: COR[simbolo] }}>
+          <span className="meta">{NOMES[simbolo]}</span>
+          <span className="medida" style={{ fontSize: '1.05rem' }}>
+            <Latex tex={`${simbolo} = ${latexNumero(valores[simbolo])}`} />
+          </span>
         </li>
       ))}
     </ul>
@@ -37,27 +45,29 @@ export function PainelRelacoes({ triangulo }: { triangulo: TrianguloRetangulo })
   const valores = medidasDe(triangulo);
 
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="grade-relacoes">
       {relacoesMetricas(triangulo).map((relacao) => {
         const vale = relacaoVale(relacao, 1e-6);
-        const esquerda = latexNumero(relacao.esquerda.valor);
-        const direita = latexNumero(relacao.direita.valor);
 
         return (
-          <li key={relacao.id} className="rounded border border-neutral-300 p-2">
-            <p className="text-xs text-neutral-600">{relacao.nome}</p>
-            <p className="text-base">
-              <Latex tex={relacao.latex} />
-            </p>
-            <p className="text-sm text-neutral-800">
-              <Latex tex={substituirSimbolos(relacao.latex, valores)} />
-            </p>
-            <p className="text-sm">
-              <Latex tex={`${esquerda} = ${direita}`} />{' '}
-              <span aria-label={vale ? 'relação confirmada' : 'relação não confere'}>
-                {vale ? '✓' : '✗'}
+          <li key={relacao.id} className="cartao relacao">
+            <div className="relacao__topo">
+              <span className="meta">{relacao.nome}</span>
+              <span className={vale ? 'selo selo--feito' : 'selo selo--erro'}>
+                {vale ? 'confere' : 'não confere'}
               </span>
-            </p>
+            </div>
+            <span className="relacao__formula">
+              <Latex tex={relacao.latex} />
+            </span>
+            <span className="relacao__substituida medida">
+              <Latex tex={substituirSimbolos(relacao.latex, valores)} />
+            </span>
+            <span className="relacao__igualdade medida">
+              <Latex
+                tex={`${latexNumero(relacao.esquerda.valor)} = ${latexNumero(relacao.direita.valor)}`}
+              />
+            </span>
           </li>
         );
       })}

@@ -9,13 +9,13 @@ export function BotaoConcluir({ atividadeId }: { atividadeId: string }) {
   const concluida = estadoDe(useProgressoGeral(), atividadeId).concluida;
 
   if (concluida) {
-    return <p className="meta">Atividade concluída ✓</p>;
+    return <p className="selo selo--feito">Atividade concluída</p>;
   }
 
   return (
     <button
       type="button"
-      className="botao botao-secundario"
+      className="botao botao--fantasma"
       onClick={() => atualizarProgresso((progresso) => concluirAtividade(progresso, atividadeId))}
     >
       Marcar como concluída

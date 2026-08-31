@@ -26,19 +26,22 @@ export function Latex({ tex, display = false, className }: LatexProps) {
 /**
  * Texto com matemática entre cifrões. Renderizar o enunciado inteiro como LaTeX
  * jogaria a prosa em modo matemático — itálico, espaços comidos, ilegível.
+ * Reconhece `$$bloco$$` e `$linha$`.
  */
 export function TextoComMatematica({ texto }: { texto: string }) {
-  const partes = texto.split(/\$([^$]*)\$/g);
+  const partes = texto.split(/(\$\$[\s\S]*?\$\$|\$[^$\n]+\$)/g).filter((parte) => parte !== '');
 
   return (
     <>
-      {partes.map((parte, indice) =>
-        indice % 2 === 1 ? (
-          <Latex key={indice} tex={parte} />
-        ) : (
-          <span key={indice}>{parte}</span>
-        ),
-      )}
+      {partes.map((parte, indice) => {
+        if (parte.startsWith('$$') && parte.endsWith('$$')) {
+          return <Latex key={indice} tex={parte.slice(2, -2)} display />;
+        }
+        if (parte.startsWith('$') && parte.endsWith('$') && parte.length > 2) {
+          return <Latex key={indice} tex={parte.slice(1, -1)} />;
+        }
+        return <span key={indice}>{parte}</span>;
+      })}
     </>
   );
 }

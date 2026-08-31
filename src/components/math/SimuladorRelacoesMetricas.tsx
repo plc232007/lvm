@@ -7,10 +7,13 @@ import {
   ANGULO_MAXIMO,
   ANGULO_MINIMO,
   anguloParaPonto,
+  CENTRO,
   HIPOTENUSA_B,
   HIPOTENUSA_C,
+  limitarAngulo,
   pontoParaAngulo,
   projetarNaSemicircunferencia,
+  RAIO,
 } from '@/components/math/geometria-simulador';
 import { PainelRelacoes, TabelaMedidas } from '@/components/math/PainelRelacoes';
 import { formatarNumero } from '@/core/math/formato';
@@ -18,6 +21,17 @@ import { construirTriangulo } from '@/core/math/triangulo-retangulo';
 
 const PASSO_ANGULO = 0.02;
 const ANGULO_INICIAL = Math.PI / 3;
+
+/** Cada predefinição fixa a projeção n; o ângulo sai dela. */
+const PREDEFINICOES = [
+  { rotulo: '6 · 8 · 10', n: 6.4, descricao: 'o 3-4-5 dobrado' },
+  { rotulo: 'isósceles', n: 5, descricao: 'catetos iguais' },
+  { rotulo: 'bem achatado', n: 9.5, descricao: 'a altura quase some' },
+];
+
+function anguloParaProjecao(n: number): number {
+  return limitarAngulo(Math.acos((n - CENTRO.x) / RAIO));
+}
 
 export function SimuladorRelacoesMetricas() {
   const idControle = useId();
@@ -42,11 +56,11 @@ export function SimuladorRelacoesMetricas() {
     `projeções ${formatarNumero(triangulo.m)} e ${formatarNumero(triangulo.n)}`;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <FiguraTriangulo triangulo={triangulo} elementoVertice={vertice.element} />
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor={idControle} className="text-sm">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <label htmlFor={idControle} style={{ fontSize: '0.9375rem', fontWeight: 500 }}>
           Posição do vértice A sobre a semicircunferência
         </label>
         <input
@@ -58,21 +72,38 @@ export function SimuladorRelacoesMetricas() {
           value={angulo}
           aria-valuetext={descricaoAtual}
           onChange={(evento) => vertice.setPoint(anguloParaPonto(Number(evento.target.value)))}
-          className="w-full"
+          style={{ width: '100%', accentColor: 'var(--azul)' }}
         />
-        <p className="text-xs text-neutral-600">
-          Arraste o ponto azul ou use as setas do teclado com este controle em foco. O ângulo em A
-          permanece reto em qualquer posição.
+        <p className="meta">
+          Arraste o ponto, use as setas do teclado com o controle em foco, ou pule para um
+          triângulo conhecido:
         </p>
+        <div className="predefinicoes">
+          {PREDEFINICOES.map((predefinicao) => {
+            const alvo = anguloParaProjecao(predefinicao.n);
+            return (
+              <button
+                key={predefinicao.rotulo}
+                type="button"
+                className="predefinicao"
+                aria-pressed={Math.abs(angulo - alvo) < 0.02}
+                onClick={() => vertice.setPoint(anguloParaPonto(alvo))}
+                title={predefinicao.descricao}
+              >
+                {predefinicao.rotulo}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <section aria-label="Medidas atuais" className="flex flex-col gap-2">
-        <h2 className="text-sm font-semibold">Medidas</h2>
+      <section aria-label="Medidas atuais" style={{ display: 'grid', gap: '0.6rem' }}>
+        <h2 className="titulo-secao">Medidas</h2>
         <TabelaMedidas triangulo={triangulo} />
       </section>
 
-      <section aria-label="Relações métricas" className="flex flex-col gap-2">
-        <h2 className="text-sm font-semibold">Relações</h2>
+      <section aria-label="Relações métricas" style={{ display: 'grid', gap: '0.6rem' }}>
+        <h2 className="titulo-secao">As seis relações, com os números no lugar</h2>
         <PainelRelacoes triangulo={triangulo} />
       </section>
     </div>
