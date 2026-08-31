@@ -22,3 +22,23 @@ export function Latex({ tex, display = false, className }: LatexProps) {
     <span className={className} dangerouslySetInnerHTML={{ __html: html }} />
   );
 }
+
+/**
+ * Texto com matemática entre cifrões. Renderizar o enunciado inteiro como LaTeX
+ * jogaria a prosa em modo matemático — itálico, espaços comidos, ilegível.
+ */
+export function TextoComMatematica({ texto }: { texto: string }) {
+  const partes = texto.split(/\$([^$]*)\$/g);
+
+  return (
+    <>
+      {partes.map((parte, indice) =>
+        indice % 2 === 1 ? (
+          <Latex key={indice} tex={parte} />
+        ) : (
+          <span key={indice}>{parte}</span>
+        ),
+      )}
+    </>
+  );
+}
