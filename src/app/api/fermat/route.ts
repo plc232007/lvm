@@ -9,6 +9,8 @@ import {
 import type { ContextoFermat } from '@/lib/fermat-contexto';
 
 export const runtime = 'nodejs';
+// A resposta é transmitida em fluxo; 30s cobre com folga o pior caso de fila.
+export const maxDuration = 30;
 
 const ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
