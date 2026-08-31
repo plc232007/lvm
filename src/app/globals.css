@@ -712,24 +712,28 @@ main,
 
 .fundo__figura {
   color: var(--azul);
-  opacity: 0.14;
+  opacity: 0.28;
   width: var(--largura, 8.5rem);
 }
-.fundo__figura svg { width: 100%; height: auto; display: block; }
+/* No papel claro a tinta escura lava a 14%; no escuro o traço claro brilha
+   sozinho. Por isso o claro pede mais opacidade e traço mais grosso. */
+.fundo__figura svg { width: 100%; height: auto; display: block; stroke-width: 1.6; }
 
 .fundo__formula {
-  color: var(--tinta);
-  opacity: 0.1;
+  color: var(--azul-tinta);
+  opacity: 0.22;
   font-size: var(--corpo, 1.5rem);
   white-space: nowrap;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-tema='claro']) .fundo__figura { opacity: 0.16; }
-  :root:not([data-tema='claro']) .fundo__formula { opacity: 0.12; }
+  :root:not([data-tema='claro']) .fundo__figura { opacity: 0.17; }
+  :root:not([data-tema='claro']) .fundo__figura svg { stroke-width: 1.2; }
+  :root:not([data-tema='claro']) .fundo__formula { opacity: 0.14; }
 }
-:root[data-tema='escuro'] .fundo__figura { opacity: 0.16; }
-:root[data-tema='escuro'] .fundo__formula { opacity: 0.12; }
+:root[data-tema='escuro'] .fundo__figura { opacity: 0.17; }
+:root[data-tema='escuro'] .fundo__figura svg { stroke-width: 1.2; }
+:root[data-tema='escuro'] .fundo__formula { opacity: 0.14; }
 
 @keyframes deriva {
   from {
@@ -790,13 +794,18 @@ main,
 .fundo__peca--14 { top: 34%; left: 1%;   --corpo: 1.4rem; --dx: 35px;  --dy: 22px;  --giro: 6deg;  --duracao: 50s; --espera: -9s; }
 
 /* Em tela estreita, a margem é do conteúdo: fica só um punhado de marcas. */
+/* A peça 11 nasce perto da coluna de leitura: some antes das outras, para não
+   passar por baixo do texto quando as margens apertam. */
+@media (max-width: 85rem) {
+  .fundo__peca--11 { display: none; }
+}
 @media (max-width: 75rem) {
-  .fundo__peca--5, .fundo__peca--11, .fundo__peca--13 { display: none; }
+  .fundo__peca--5, .fundo__peca--13 { display: none; }
 }
 @media (max-width: 60rem) {
   .fundo__peca--6, .fundo__peca--8, .fundo__peca--12 { display: none; }
-  .fundo__figura { opacity: 0.1; }
-  .fundo__formula { opacity: 0.075; }
+  .fundo__figura { opacity: 0.2; }
+  .fundo__formula { opacity: 0.15; }
 }
 @media (max-width: 40rem) {
   .fundo__peca--3, .fundo__peca--7, .fundo__peca--9, .fundo__peca--10 { display: none; }
