@@ -34,4 +34,23 @@ describe('constituição', () => {
   it('src/core não usa .tsx', () => {
     expect(arquivosTs(CORE_DIR).filter((a) => a.endsWith('.tsx'))).toEqual([]);
   });
+
+  // Pega o caso que de fato aparece na prática — comparar com literal numérico.
+  // Comparação entre duas variáveis numéricas exigiria tipos, não regex; a
+  // única exata autorizada é o atalho dentro do próprio helper de tolerância.
+  it('src/core não compara float com literal numérico via === ou !==', () => {
+    const comparacaoComLiteral = /(?:[=!]==\s*-?\d|-?\d(?:\.\d+)?(?:e-?\d+)?\s*[=!]==)/;
+
+    const violacoes = arquivosTs(CORE_DIR)
+      .filter((arquivo) => !arquivo.endsWith('tolerancia.ts'))
+      .flatMap((arquivo) => {
+        const linhas = readFileSync(arquivo, 'utf8').split('\n');
+        return linhas
+          .map((linha, i) => ({ linha: linha.trim(), numero: i + 1 }))
+          .filter(({ linha }) => comparacaoComLiteral.test(linha))
+          .map(({ linha, numero }) => `${arquivo}:${numero} → ${linha}`);
+      });
+
+    expect(violacoes).toEqual([]);
+  });
 });
