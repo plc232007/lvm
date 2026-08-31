@@ -691,17 +691,16 @@ h1, h2, h3 {
   contain: strict;
 }
 
+/* Sobem acima da camada de fundo. O lançador e o painel do Fermat ficam de
+   fora desta regra de propósito: são `fixed`, e declarar `position: relative`
+   aqui os devolveria ao fluxo da página. O z-index deles vive no próprio bloco. */
 .cabecalho,
 main,
-.rodape,
-.fermat-lancador,
-.fermat-painel {
+.rodape {
   position: relative;
   z-index: 1;
 }
 .cabecalho { z-index: 30; }
-.fermat-lancador { z-index: 40; }
-.fermat-painel { z-index: 50; }
 
 .fundo__peca {
   position: absolute;
