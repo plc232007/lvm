@@ -11,7 +11,8 @@ original: Victor Hugo Theodoro / IFB.
 
 ```bash
 npm install
-cp .env.example .env.local   # preencha GROQ_API_KEY
+cp .env.example .env.local          # preencha GROQ_API_KEY
+git config core.hooksPath .githooks # trava que barra segredo no commit
 npm run dev
 ```
 
@@ -53,8 +54,21 @@ fica no servidor, atrás de `src/app/api/fermat/route.ts` — nunca no navegador
 enunciado em aberto vai no contexto do assistente; a resposta esperada, não, para
 que ele não consiga entregar o número.
 
-Configure `GROQ_API_KEY` no `.env.local` (desenvolvimento) e nas variáveis de
-ambiente do projeto (produção).
+### Onde a chave mora
+
+| Ambiente | Lugar | Versionado? |
+|---|---|---|
+| Desenvolvimento | `.env.local` | não, está no `.gitignore` |
+| Produção | Variáveis de ambiente do projeto na Vercel | não, nunca sai do painel |
+| Código | em lugar nenhum | — |
+
+A chave é lida só em `src/app/api/fermat/route.ts`, que roda no servidor. Como o
+nome da variável não começa com `NEXT_PUBLIC_`, o Next nem a inclui no pacote
+que vai para o navegador.
+
+O hook em `.githooks/pre-commit` recusa o commit se um arquivo de ambiente ou
+algo com cara de credencial entrar no índice. Ative com
+`git config core.hooksPath .githooks`.
 
 ## Privacidade
 

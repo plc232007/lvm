@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Trava de segredo: recusa o commit se algo com cara de chave for parar no índice.
+# Ativar em cada máquina com:  git config core.hooksPath .githooks
+set -uo pipefail
+
+vermelho=$'\033[31m'; normal=$'\033[0m'
+problemas=0
+
+arquivos=$(git diff --cached --name-only --diff-filter=ACM)
+
+# 1. Arquivo de ambiente indo junto (o .env.example é o único liberado)
+for arquivo in $arquivos; do
+  case "$arquivo" in
+    .env.example) ;;
+    .env|.env.*|*/.env|*/.env.*)
+      echo "${vermelho}✗ ${arquivo} é arquivo de ambiente e não deve ser versionado.${normal}"
+      problemas=1
+      ;;
+  esac
+done
+
+# 2. Conteúdo com cara de credencial
+padroes='gsk_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----'
+
+for arquivo in $arquivos; do
+  [ -f "$arquivo" ] || continue
+  if achado=$(git show ":$arquivo" 2>/dev/null | grep -nEo "$padroes" | head -3); then
+    if [ -n "$achado" ]; then
+      echo "${vermelho}✗ ${arquivo} tem algo com cara de chave:${normal}"
+      echo "$achado" | sed 's/^/    /'
+      problemas=1
+    fi
+  fi
+done
+
+if [ "$problemas" -ne 0 ]; then
+  cat <<'AVISO'
+
+Commit recusado. Chave nenhuma entra no repositório: ela vive no .env.local
+(desenvolvimento) e nas variáveis de ambiente da Vercel (produção).
+
+Se for alarme falso, refaça com:  git commit --no-verify
+AVISO
+  exit 1
+fi
