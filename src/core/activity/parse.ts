@@ -2,6 +2,7 @@ import {
   ehTipoDeAtividade,
   type Activity,
   type ActivityKind,
+  type Trilha,
 } from '@/core/activity/tipos';
 import { falha, sucesso, type Resultado } from '@/core/resultado';
 
@@ -116,4 +117,59 @@ export function descreverErros(erros: readonly ErroConteudo[]): string {
   return erros
     .map((erro) => `${erro.origem} → ${erro.atividade} → ${erro.campo}: ${erro.mensagem}`)
     .join('\n');
+}
+
+/**
+ * A trilha injeta seu próprio id como `moduleId` das atividades: quem escreve
+ * conteúdo não repete essa informação em cada parada.
+ */
+export function parseTrilha(
+  bruto: unknown,
+  origem: string,
+): Resultado<Trilha, readonly ErroConteudo[]> {
+  if (!ehRegistro(bruto)) {
+    return falha([
+      { origem, atividade: '(raiz)', campo: '(raiz)', mensagem: 'esperava um objeto de trilha' },
+    ]);
+  }
+
+  const erros: ErroConteudo[] = [];
+  for (const campo of ['id', 'slug', 'titulo', 'resumo']) {
+    if (!textoNaoVazio(bruto[campo])) {
+      erros.push({ origem, atividade: '(trilha)', campo, mensagem: 'texto obrigatório' });
+    }
+  }
+  if (textoNaoVazio(bruto.slug) && !/^[a-z0-9-]+$/.test(String(bruto.slug))) {
+    erros.push({
+      origem,
+      atividade: '(trilha)',
+      campo: 'slug',
+      mensagem: 'apenas minúsculas, números e hífen',
+    });
+  }
+  if (!Array.isArray(bruto.atividades) || bruto.atividades.length === 0) {
+    erros.push({
+      origem,
+      atividade: '(trilha)',
+      campo: 'atividades',
+      mensagem: 'esperava uma lista com pelo menos uma atividade',
+    });
+    return falha(erros);
+  }
+
+  const comModulo = bruto.atividades.map((item) =>
+    ehRegistro(item) ? { moduleId: bruto.id, ...item } : item,
+  );
+  const atividades = parseAtividades(comModulo, origem);
+
+  if (!atividades.ok) erros.push(...atividades.erro);
+  if (erros.length > 0) return falha(erros);
+
+  return sucesso({
+    id: String(bruto.id),
+    slug: String(bruto.slug),
+    titulo: String(bruto.titulo),
+    resumo: String(bruto.resumo),
+    atividades: atividades.ok ? atividades.valor : [],
+  });
 }

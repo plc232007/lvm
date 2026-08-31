@@ -1,0 +1,63 @@
+# Trilha de geometria. Adicionar uma parada aqui basta: nenhuma rota muda.
+id: geometria
+slug: geometria
+titulo: Geometria — relações métricas
+resumo: >-
+  Do triângulo manipulável ao exercício que muda a cada tentativa: entenda por
+  que as cinco relações do triângulo retângulo valem, em vez de decorá-las.
+atividades:
+  - id: relacoes-metricas-leitura
+    kind: reading
+    title: O que são as relações métricas
+    config:
+      arquivo: relacoes-metricas.mdx
+
+  - id: relacoes-metricas-simulador
+    kind: simulator
+    title: 'Laboratório: arraste o triângulo'
+    config:
+      simuladorId: relacoes-metricas
+
+  - id: relacoes-metricas-altura
+    kind: exercise
+    title: 'Praticar: altura a partir das projeções'
+    config:
+      generatorId: h-por-projecoes
+      quantidade: 3
+
+  - id: relacoes-metricas-cateto
+    kind: exercise
+    title: 'Praticar: cateto a partir da hipotenusa e da projeção'
+    config:
+      generatorId: cateto-por-projecao
+      quantidade: 3
+
+  - id: relacoes-metricas-altura-catetos
+    kind: exercise
+    title: 'Praticar: altura a partir dos catetos'
+    config:
+      generatorId: altura-por-catetos
+      quantidade: 3
+
+  - id: relacoes-metricas-kahoot
+    kind: external
+    title: 'Jogo: Relações Métricas no Kahoot'
+    config:
+      url: https://play.kahoot.it/v2/?quizId=e240c06b-f94c-40db-ace1-a9548f168c02
+      descricao: >-
+        Quiz do professor Victor Hugo Theodoro, herdado do site antigo. Abre no
+        Kahoot, fora do LVM.
+
+  - id: relacoes-metricas-atividade-revisao
+    kind: external
+    title: 'Atividade de revisão (PDF)'
+    config:
+      url: https://drive.google.com/file/d/1RlI5W6fskM-rrWdCP2DSuPobDCLgubqb/view?usp=drive_link
+      descricao: Lista de revisão para resolver em sala ou em casa. Abre no Google Drive.
+
+  - id: relacoes-metricas-material-apoio
+    kind: external
+    title: 'Material de apoio da aula (PDF)'
+    config:
+      url: https://drive.google.com/file/d/1QGI65ptr9idmqH8OYarEBEZhjlt6oE4R/view?usp=drive_link
+      descricao: Material de apoio usado na aula. Abre no Google Drive.

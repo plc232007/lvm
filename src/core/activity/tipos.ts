@@ -50,3 +50,11 @@ export const TIPOS_DE_ATIVIDADE: readonly ActivityKind[] = [
 export function ehTipoDeAtividade(valor: unknown): valor is ActivityKind {
   return typeof valor === 'string' && TIPOS_DE_ATIVIDADE.includes(valor as ActivityKind);
 }
+
+export interface Trilha {
+  readonly id: string;
+  readonly slug: string;
+  readonly titulo: string;
+  readonly resumo: string;
+  readonly atividades: readonly Activity[];
+}

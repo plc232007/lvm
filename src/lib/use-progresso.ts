@@ -22,3 +22,7 @@ export function useProgresso(atividadeId: string): {
 
   return { estado: estadoDe(progresso, atividadeId), atualizar: atualizarProgresso };
 }
+
+export function useProgressoGeral(): Progresso {
+  return useSyncExternalStore(assinar, lerSnapshot, lerSnapshotDoServidor);
+}

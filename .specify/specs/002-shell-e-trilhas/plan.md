@@ -35,21 +35,32 @@ A lógica de merge, conclusão e contagem vive em `core/progress` como funções
 puras sobre um objeto — `localStorage` só aparece na borda, em `lib/`. Assim o
 progresso é testável sem DOM (Constituição, regra 1).
 
-### D4 — YAML precisa de parser
+### D4 — YAML, decidido
 
-Não existe leitor de YAML embutido no Node. Opções: trocar `content/trilhas`
-para JSON (zero dependência, formato pior de escrever à mão para um professor) ou
-adicionar `yaml`. **A decisão fica para a abertura da 002**, com recomendação de
-`yaml` — o público que vai editar esses arquivos não é programador, e vírgula
-faltando em JSON é um erro cruel.
+Adotado o pacote `yaml`. Quem vai editar `content/trilhas` é professor, não
+programador: JSON cobraria aspas em toda chave e puniria uma vírgula sobrando com
+erro de sintaxe. O YAML ainda permite comentário e bloco de texto (`>-`), que o
+resumo da trilha usa. O parser fica isolado no loader — trocar de formato depois
+não toca no runtime.
+
+### D5 — MDX pelo caminho RSC, e runtime no servidor
+
+A primeira montagem tinha `RuntimeAtividade` como client component, e o
+`MDXRemote` cliente quebrou no prerender (`Cannot read properties of null
+(reading 'useState')`). A correção não foi contornar o erro e sim corrigir a
+divisão: **o runtime é server component** — ele só faz lookup e delega — e cada
+renderer escolhe seu lado. Leitura, vídeo e link externo são servidor (zero JS no
+cliente); simulador e exercício são cliente porque têm estado. O MDX passa a usar
+`next-mdx-remote/rsc`, que compila no servidor com `remark-math` +
+`rehype-katex`.
 
 ## Dependências novas (Constituição, regra 7)
 
 | Pacote | Fase | Justificativa | Status |
 |---|---|---|---|
-| `next-mdx-remote` | 5 | Já fixado na stack. Render de MDX vindo de arquivo, sem rota por texto. Verificar compatibilidade com Next 16 antes; alternativa é `@next/mdx`. | a aprovar |
-| `remark-math` + `rehype-katex` | 5 | Já fixados na stack. Pipeline de matemática no MDX. | a aprovar |
-| `yaml` | 5 | Ver D4. Alternativa sem dependência: usar JSON. | **a decidir** |
+| `next-mdx-remote` 6.0.0 | 5 | Já fixado na stack. Usado pelo entrypoint `/rsc`; o entrypoint cliente quebra no prerender (ver D5). | instalado |
+| `remark-math` 6 + `rehype-katex` 7 | 5 | Já fixados na stack. Pipeline de matemática no MDX. | instalado |
+| `yaml` 2.9 | 5 | Ver D4. | instalado |
 
 ## Riscos
 

@@ -1,0 +1,59 @@
+Num triângulo retângulo, traçar a altura sobre a hipotenusa parece um detalhe
+técnico. Não é: esse único traço divide o triângulo em dois outros, e os três
+têm exatamente a mesma forma. É daí que sai tudo o que vem a seguir.
+
+## A convenção, antes de qualquer fórmula
+
+O ângulo reto fica no vértice $A$. Então:
+
+- $a$ é a **hipotenusa**, o lado oposto ao ângulo reto;
+- $b$ e $c$ são os **catetos**;
+- $h$ é a **altura** relativa à hipotenusa, do vértice $A$ até o ponto $H$;
+- $m$ é a **projeção de $b$** sobre a hipotenusa, e $n$ a **projeção de $c$**.
+
+Guarde a última linha com cuidado, porque é ali que quase todo erro nasce: cada
+projeção pertence a um cateto específico — a que "encosta" nele.
+
+## As cinco relações
+
+$$a^2 = b^2 + c^2$$
+
+O Teorema de Pitágoras, que você já conhece.
+
+$$b^2 = a \cdot m \qquad c^2 = a \cdot n$$
+
+Cada cateto ao quadrado é a hipotenusa vezes a **sua própria** projeção. Trocar
+$m$ por $n$ aqui é o erro mais comum da matéria inteira.
+
+$$h^2 = m \cdot n$$
+
+A altura ao quadrado é o produto das duas projeções.
+
+$$a \cdot h = b \cdot c$$
+
+Os dois lados dessa igualdade são o dobro da área do triângulo, calculada de
+duas maneiras: tomando a hipotenusa como base, ou tomando um cateto como base e
+o outro como altura.
+
+$$a = m + n$$
+
+As duas projeções, juntas, são a hipotenusa inteira.
+
+## Por que isso vale
+
+A altura cria dois triângulos menores. Cada um deles tem um ângulo reto (em $H$)
+e compartilha um ângulo agudo com o triângulo original — e se dois ângulos são
+iguais, o terceiro também é. Os três triângulos são semelhantes: mudam de
+tamanho, não de forma.
+
+Semelhança significa que os lados correspondentes guardam a mesma proporção. Cada
+relação acima é uma dessas proporções, escrita sem fração. Por exemplo, comparar
+o triângulo todo com o menor que apoia em $m$ dá $\frac{a}{b} = \frac{b}{m}$, e
+multiplicar em cruz produz $b^2 = a \cdot m$.
+
+## O que fazer agora
+
+Vá para o laboratório e arraste o vértice. Repare que as seis medidas mudam
+juntas e que as igualdades continuam valendo em qualquer posição — inclusive nas
+bem achatadas, onde a intuição costuma falhar. Depois, resolva os exercícios: eles
+mudam de número a cada tentativa, então não há resposta para decorar.
