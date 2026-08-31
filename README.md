@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LVM — Laboratório Virtual de Matemática
 
-## Getting Started
+Laboratório de matemática do IFB. O aluno arrasta o triângulo, vê as relações
+métricas continuarem valendo em qualquer posição e pratica com exercícios que
+mudam de número a cada tentativa — não há gabarito para decorar.
 
-First, run the development server:
+Reescrita de um site que era um mural de links estático. Autoria do conteúdo
+original: Victor Hugo Theodoro / IFB.
+
+## Como rodar
 
 ```bash
+npm install
+cp .env.example .env.local   # preencha GROQ_API_KEY
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Comando | O que faz |
+|---|---|
+| `npm run dev` | servidor de desenvolvimento |
+| `npm test` | suíte completa (Vitest + fast-check) |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run build` | build de produção |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Como está organizado
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+content/            conteúdo como dado: trilhas em YAML, textos em MDX
+src/core/           domínio puro — zero React, testável com node
+  math/             triângulo retângulo, tolerâncias, PRNG, relações
+  exercise/         geradores determinísticos por semente
+  activity/         tipos e validação de atividade
+  progress/         progresso como funções puras
+src/components/     UI: renderers por tipo de atividade, simulador, Fermat
+src/app/            rotas — uma para trilha, uma para atividade
+.specify/           constituição do projeto e specs das features
+```
 
-## Learn More
+Três regras estruturais que o repositório mantém à força, com teste que quebra
+o build se forem violadas:
 
-To learn more about Next.js, take a look at the following resources:
+1. **`src/core/**` não importa React, Next nem DOM.** É domínio puro.
+2. **Nenhuma comparação de float com `===`.** Existe um helper de tolerância.
+3. **Atividade é dado, não rota.** Adicionar um laboratório é editar
+   `content/trilhas/*.yaml` — nenhum arquivo em `src/app/` muda.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+As demais regras estão em [`.specify/constitution.md`](.specify/constitution.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Assistente
 
-## Deploy on Vercel
+O Fermat responde dúvidas dentro do contexto da atividade aberta. A chave da API
+fica no servidor, atrás de `src/app/api/fermat/route.ts` — nunca no navegador. O
+enunciado em aberto vai no contexto do assistente; a resposta esperada, não, para
+que ele não consiga entregar o número.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Configure `GROQ_API_KEY` no `.env.local` (desenvolvimento) e nas variáveis de
+ambiente do projeto (produção).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Privacidade
+
+O progresso do aluno vive apenas no `localStorage` do próprio navegador: nada de
+login, banco ou identificador. O que é digitado no chat vai para o modelo que
+gera a resposta, e o aviso disso aparece dentro do painel.

@@ -42,3 +42,7 @@ next-env.d.ts
 
 # exceção: o exemplo sem segredo é versionado
 !.env.example
+
+# arquivos de configuração de agente gerados pelo tooling
+AGENTS.md
+CLAUDE.md
